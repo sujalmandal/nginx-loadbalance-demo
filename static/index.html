@@ -1,18 +1,81 @@
-<html>
-    <head>
-    <!-- a beautiful hello world page that uses bootstrap-->
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-        <!--Let browser know website is optimized for mobile-->
-        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    </head>
-    <body>
-        
-        <div class="container">
-            <h3 class="center">Nginx load balancing demo</h3>
-            <ul>
-                <li>http api load balancing - /api/ping/test</li>
-                <li>web socket load balancing - /ws-api/ws/{name}</li>
-            </ul>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nginx Load Balancing Demo</title>
+    <link rel="stylesheet" href="./bootstrap.min.css">
+</head>
+<body>
+    <div class="container text-center">
+        <h3>Nginx Load Balancing Demo</h3>
+        <div class="row">
+            <div class="col-md-6">
+                <h4>HTTP Load Balancing Example</h4>
+                <div class="form-group">
+                    <label for="data">HTTP GET: /api/ping/{data}:</label>
+                    <textarea class="form-control" id="httpData" rows="1">test</textarea>
+                </div>
+                <button class="btn btn-primary" onclick="sendHttpRequest()">Send HTTP Request</button>
+            </div>
+
+            <div class="col-md-6">
+                <h4>WebSocket Load Balancing Example</h4>
+                <div class="form-group">
+                    <label for="wsData">WebSocket: /ws-api/ws/test:</label>
+                    <textarea class="form-control" id="wsData" rows="1">test</textarea>
+                </div>
+                <button class="btn btn-secondary" onclick="connectWebSocket()">Connect to WebSocket</button>
+                <button class="btn btn-primary" onclick="sendWsMessage()">Send Data over WebSocket</button>
+            </div>
         </div>
-    </body>
+
+        <div class="response mt-3">
+            <h4>Response:</h4>
+            <pre id="response"></pre>
+        </div>
+    </div>
+
+    <script>
+        let ws;
+
+        function connectWebSocket() {
+            ws = new WebSocket("ws://localhost:8080/ws-api/ws/test");
+            ws.onopen = function () {
+                document.getElementById('response').textContent = 'WebSocket connection established.';
+            };
+            ws.onmessage = function (event) {
+                document.getElementById('response').textContent = 'WebSocket message received: ' + event.data;
+            };
+            ws.onclose = function () {
+                document.getElementById('response').textContent = 'WebSocket connection closed.';
+            };
+        }
+
+        function sendWsMessage() {
+            let data = document.getElementById('wsData').value;
+            ws.send(data);
+        }
+
+        function sendHttpRequest() {
+            let url = "http://localhost:8080/api/ping/";
+            let method = "GET";
+            let data = document.getElementById('httpData').value;
+
+            let xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    if (xhr.status === 200) {
+                        document.getElementById('response').textContent = xhr.responseText;
+                    } else {
+                        document.getElementById('response').textContent = 'Error: ' + xhr.status;
+                    }
+                }
+            };
+
+            xhr.open(method, url + data, true);
+            xhr.send();
+        }
+    </script>
+</body>
 </html>
