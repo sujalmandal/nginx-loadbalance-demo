@@ -1,67 +1,19 @@
-# code-with-quarkus
+## load balancing example using nginx
+### stack
+    - quarkus framework
+    - docker containers
+    - nginx reverse proxy
 
-This project uses Quarkus, the Supersonic Subatomic Java Framework.
+### description
+This example demonstrates how to use Nginx as a reverse proxy for load balancing multiple Quarkus applications. The solution consists of two Quarkus applications and one Nginx container running on Docker. The 2 Quarkus applications are deployed on different containers, inside the same docker stack, thus they have different dns (same as docker service name).
 
-If you want to learn more about Quarkus, please visit its website: https://quarkus.io/ .
+To achieve load balancing, we utilize the `proxy_pass` directive in the Nginx configuration file. This directive forwards incoming requests from the client to one of the two Quarkus application servers based on a round-robin algorithm.
 
-## Running the application in dev mode
+### deployment
+The deployment process involves the following steps:
+1. `./start.cmd`
 
-You can run your application in dev mode that enables live coding using:
-```shell script
-./mvnw compile quarkus:dev
-```
-
-> **_NOTE:_**  Quarkus now ships with a Dev UI, which is available in dev mode only at http://localhost:8080/q/dev/.
-
-## Packaging and running the application
-
-The application can be packaged using:
-```shell script
-./mvnw package
-```
-It produces the `quarkus-run.jar` file in the `target/quarkus-app/` directory.
-Be aware that it’s not an _über-jar_ as the dependencies are copied into the `target/quarkus-app/lib/` directory.
-
-The application is now runnable using `java -jar target/quarkus-app/quarkus-run.jar`.
-
-If you want to build an _über-jar_, execute the following command:
-```shell script
-./mvnw package -Dquarkus.package.type=uber-jar
-```
-
-The application, packaged as an _über-jar_, is now runnable using `java -jar target/*-runner.jar`.
-
-## Creating a native executable
-
-You can create a native executable using: 
-```shell script
-./mvnw package -Dnative
-```
-
-Or, if you don't have GraalVM installed, you can run the native executable build in a container using: 
-```shell script
-./mvnw package -Dnative -Dquarkus.native.container-build=true
-```
-
-You can then execute your native executable with: `./target/code-with-quarkus-1.0.0-SNAPSHOT-runner`
-
-If you want to learn more about building native executables, please consult https://quarkus.io/guides/maven-tooling.
-
-## Related Guides
-
-- REST Jackson ([guide](https://quarkus.io/guides/rest#json-serialisation)): Jackson serialization support for Quarkus REST. This extension is not compatible with the quarkus-resteasy extension, or any of the extensions that depend on it
-- WebSockets ([guide](https://quarkus.io/guides/websockets)): WebSocket communication channel support
-
-## Provided Code
-
-### REST
-
-Easily start your REST Web Services
-
-[Related guide section...](https://quarkus.io/guides/getting-started-reactive#reactive-jax-rs-resources)
-
-### WebSockets
-
-WebSocket communication channel starter code
-
-[Related guide section...](https://quarkus.io/guides/websockets)
+### usage
+Once the deployment is complete
+    - visit `localhost:8080` to load static files directly served from the nginx instance.
+    - run `localhost:8080/backend/ping` to run `/ping` resource written in the quarkus microservices.
