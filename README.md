@@ -12,8 +12,9 @@ To achieve load balancing, we utilize the `proxy_pass` directive in the Nginx co
 ### deployment
 The deployment process involves the following steps:
 1. `./start.cmd`
+2. To update the nginx.conf and view the effects on load balancing, use `./start.cmd -skipBuild` to avoid building the microservices every time conf is changed.
 
 ### usage
 Once the deployment is complete
     - visit `localhost:8080` to load static files directly served from the nginx instance.
-    - run `localhost:8080/backend/ping` to run `/ping` resource written in the quarkus microservices.
+    - run `localhost:8080/api/ping/test` to run `/ping/{payload}` resource written in the quarkus microservices.
